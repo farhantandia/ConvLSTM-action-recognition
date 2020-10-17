@@ -1,2 +1,2 @@
-# Fast-LSTM-action-recognition
+# Action recognition using ConvLSTM
  
