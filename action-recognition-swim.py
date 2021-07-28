@@ -1,30 +1,21 @@
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras import optimizers
-from tensorflow.keras.models import Sequential, Model, load_model
+from tensorflow.keras.models import Sequential, 
 from tensorflow.keras.layers import *
 import tensorflow_addons as tfa
-from tensorflow.keras.callbacks import ModelCheckpoint, LearningRateScheduler, TensorBoard, EarlyStopping, ReduceLROnPlateau
+from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 import os
 import cv2
 import numpy as np
 from sklearn.model_selection import train_test_split
-from sklearn import metrics 
-from sklearn.metrics import accuracy_score
-from sklearn.metrics import precision_score
-from sklearn.metrics import recall_score
-from sklearn.metrics import f1_score
-from sklearn.metrics import cohen_kappa_score
-from sklearn.metrics import roc_auc_score
-from sklearn.metrics import multilabel_confusion_matrix
-from sklearn.metrics import classification_report
 from keras_video import VideoFrameGenerator,SlidingFrameGenerator
 import glob
 import matplotlib.pyplot as plt
 
-
-# classes = [i.split(os.path.sep)[1] for i in glob.glob('project_data/*')]
-classes = [i.split(os.path.sep)[1] for i in glob.glob('our_data/30hz/*')]
+# dataset
+# classes = [i.split(os.path.sep)[1] for i in glob.glob('youtube data/normal/*')] #Youtube
+classes = [i.split(os.path.sep)[1] for i in glob.glob('our data/30hz/*')] #our data
 classes.sort()
 print(len(classes))
 
@@ -36,13 +27,11 @@ Model_input_size = (NBFRAME, img_height, img_width, CHANNELS)
 BS = 8
 seq_len = NBFRAME
 
-# data_dir_train = "project_data"#
+# data_dir_train = "youtube data/normal" #youtube
 data_dir_train = "our_data/30hz"
-
-# data_dir_val = "our_data/30hz-val"
  
 # classes = ["Backstroke", "Breaststroke", "Freestyle","Safe","Drowning"]
- 
+'''MANUAL GENERATOR''' 
 def frames_extraction(video_path, c, X, Y, Xf, Yf, sscnt,isTraining):
     frames_list = []
     flist = []
@@ -74,17 +63,6 @@ def frames_extraction(video_path, c, X, Y, Xf, Yf, sscnt,isTraining):
                 Y.append(y)
                 tmp_frames = []
                 break
-            # elif len(tmp_frames) < seq_len:
-            #     sscnt += 1
-            #     X.append(tmp_frames)
-                
-            #     y = [0]*len(classes)
-            #     y[classes.index(c)] = 1
-            #     Y.append(y)
-            #     tmp_frames = []
-            #     break
-
-                #tmp_flow_frames = []
         else:
             #print("Defected frame")
             break
@@ -120,8 +98,8 @@ X_train, X_test, y_train, y_test = train_test_split(X_train, y_train, test_size=
 print(y_train.shape)
 # X_test, y_test = create_data(data_dir_train,0)
 
+'''AUTO GENERATOR'''
 # glob_pattern_train='project_data/{classname}/*.avi'
-glob_pattern_train='our_data/30hz/{classname}/*.avi'
 # glob_pattern_val='our_data/30hz/{classname}/*.avi'
 # for data augmentation
 # data_aug = ImageDataGenerator(
@@ -167,7 +145,7 @@ glob_pattern_train='our_data/30hz/{classname}/*.avi'
 #     use_frame_cache=True)
 # valid = train.get_validation_generator()
 
-filepath = '../Yolov4-deepsort/our-action-test30ext.hdf5'
+filepath = 'models/convlstm_model.hdf5'
 model = Sequential()
 
 # model.add(Input(shape=Model_input_size))
@@ -199,8 +177,6 @@ model = Sequential()
 # model.add(Dropout(0.5))
 model.add(ConvLSTM2D(filters = 16, kernel_size = (3, 3), padding='same',return_sequences = True, data_format = "channels_last", 
                      input_shape = (seq_len, img_height, img_width,3)))
-# model.add(BatchNormalization())
-# model.add(Dropout(0.2))
 model.add(ConvLSTM2D(filters =16, kernel_size = (3, 3), return_sequences =False,))
 model.add(BatchNormalization())
 model.add(Dropout(0.2))
@@ -245,6 +221,7 @@ callbacks = [checkpoint,stop,reduce]
 history_list=[]
 loss_history_list=[]
 history = model.fit(x = X_train, y = y_train, class_weight=None,epochs=400, batch_size = BS , shuffle=True, validation_data=(X_test,y_test),verbose=1,callbacks=callbacks)
+
 # history = model.fit_generator(
 #     train,
 #     # steps_per_epoch=75,
@@ -255,18 +232,13 @@ history = model.fit(x = X_train, y = y_train, class_weight=None,epochs=400, batc
 #     callbacks=callbacks
 # )
 
-# acc1 = history_list.append(np.max(model.history.history['val_accuracy']))
-# print("Max Accuracy : ",acc1)
-
-# loss1 = loss_history_list.append(np.min(model.history.history['val_loss']))
-# print("Max Accuracy : ",loss1)
 plt.plot(history.history['accuracy'])
 plt.plot(history.history['val_accuracy'])
 plt.title('Model accuracy')
 plt.ylabel('accuracy')
 plt.xlabel('epoch')
 plt.legend(['train', 'val'], loc='best')
-plt.savefig('our-accuracy.png')
+plt.savefig('results/accuracy.png')
 plt.show()
 
 plt.plot(history.history['loss'])
@@ -275,5 +247,5 @@ plt.title('Model loss')
 plt.ylabel('loss')
 plt.xlabel('epoch')
 plt.legend(['train', 'val'], loc='best')
-plt.savefig('our-loss.png')
+plt.savefig('results/our-loss.png')
 plt.show()
