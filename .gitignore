@@ -4,3 +4,7 @@ ucf101_data/UCF101_videos.zip
 *.h5
 best_model_convlstm_fix.rar
 *.rar
+*.hdf5
+*.mp4
+*.png
+*.zip

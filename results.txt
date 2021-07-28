@@ -1,0 +1,18 @@
+our data :
+
+split train_data
+convlstm 1, acc = 0.9375,loss = 0.31869 param = 10,500,000
+convlstm 2, acc = 0.9219,loss = 0.2178 param = 9,800,000
+convlstm 3, acc = 0.9375,loss = 0.30495 param = 9,500,000
+convlstm 4, acc = 0.9375,loss = 0.16660 param = 9,100,000
+convlstm 5, acc = 0.8607,loss = 0.42282 param = 8,700,000
+
+our data + youtube:
+
+split train_data
+convlstm 1, acc = 0.8646,loss = 0.49914 param = 10,500,000
+convlstm 2, acc = 0.9479 ,loss = 0.19372 param = 9,800,000
+convlstm 3, acc = 0.9271 ,loss = 0.1970 param = 9,500,000
+convlstm 4, acc = 0.9271 , loss = 0.2315 param = 9,100,000
+convlstm 5, acc = 0.8438 ,loss = 0.44187 param = 8,700,000
+
