@@ -1,2 +1,2 @@
 # Action recognition using ConvLSTM
- Simple vide-based action recognition pipeline using ConvLSTM
+ Simple video-based action recognition pipeline using ConvLSTM
